@@ -1,18 +1,20 @@
-# Book Library CRUD API
+# Book Management REST API
 
-A full-fledged CRUD backend application for managing a book library, built with **Node.js** and **Express**. Ideally suited for learning **Object-Oriented Programming (OOP)** principles in backend development.
+A full-fledged CRUD backend application for managing a book library, built with **Node.js** and **Express**. This project demonstrates **Object-Oriented Programming (OOP)** principles and modern backend development best practices.
 
-## 🚀 Features
+## Features
 
-- **OOP Pattern**: Clean architecture using Controllers, Services, and Repositories.
-- **Complete CRUD**: Create, Read (List + Single), Update, Delete books.
-- **Authentication**: Secure User Registration and Login using JWT (JSON Web Tokens).
-- **Search & Filter**: Search books by title/author and filter by genre.
-- **Sorting & Pagination**: Efficient data handling for large lists.
-- **Frontend**: Includes a basic HTML/CSS/JS frontend to test the API.
-- **In-Memory Storage**: Uses a simulated database (Repository pattern) for easy setup without external dependencies.
+- **OOP Architecture**: Clean, maintainable code structure using Controllers, Services, and Repositories
+- **Complete CRUD Operations**: Create, Read (List + Single), Update, and Delete books
+- **JWT Authentication**: Secure user registration and login with JSON Web Tokens
+- **Search & Filter**: Search books by title/author and filter by genre
+- **Sorting & Pagination**: Efficient data handling for large datasets
+- **Input Validation**: Comprehensive validation with detailed error messages
+- **Error Handling**: Centralized error handling middleware
+- **Frontend Interface**: Basic HTML/CSS/JavaScript frontend for testing the API
+- **In-Memory Storage**: Repository pattern with simulated database for easy setup without external dependencies
 
-## 🛠️ Project Structure
+## Project Structure
 
 ```bash
 src/
@@ -29,66 +31,209 @@ public/             # Frontend files (HTML/CSS/JS)
 server.js           # Application entry point
 ```
 
-## 📦 Installation
+## Project Structure
 
-1.  **Clone the repository**:
+```
+src/
+├── config/         # Configuration files
+├── controllers/    # Route handlers (request/response logic)
+├── middlewares/    # Authentication and error handling middleware
+├── models/         # Data models (Book, User)
+├── repositories/   # Data access layer (simulated database)
+├── routes/         # API route definitions
+├── services/       # Business logic layer
+├── utils/          # Utility classes (AppError)
+│
+public/             # Frontend files (HTML/CSS/JS)
+server.js           # Application entry point
+```
 
-    ```bash
-    git clone <your-repo-url>
-    cd crud-project-
-    ```
+## Installation
 
-2.  **Install dependencies**:
+### Prerequisites
 
-    ```bash
-    npm install
-    ```
+- Node.js (v14 or higher)
+- npm or yarn
 
-3.  **Setup Environment**:
-    The project comes with a default `.env` file configuration:
-    ```env
-    PORT=3000
-    JWT_SECRET=supersecretkey
-    ```
+### Setup Steps
 
-## 🏃‍♂️ usage
+1. **Clone the repository**:
 
-### 1. Start the Server
+   ```bash
+   git clone <your-repo-url>
+   cd CRUD-SESD
+   ```
 
+2. **Install dependencies**:
+
+   ```bash
+   npm install
+   ```
+
+3. **Environment Configuration**:
+   
+   The project includes a default `.env` file with the following configuration:
+   
+   ```env
+   PORT=3000
+   JWT_SECRET=supersecretkey
+   ```
+   
+   **Note**: For production environments, ensure you use a strong, unique JWT secret.
+
+## Usage
+
+## Usage
+
+### Starting the Server
+
+**Production mode**:
 ```bash
 npm start
-# OR for development (auto-restart)
+```
+
+**Development mode** (with auto-restart using nodemon):
+```bash
 npm run dev
 ```
 
-### 2. Access the Application
+### Accessing the Application
 
-Open your browser and visit: **`http://localhost:3000`**
+- **Web Interface**: Open your browser and navigate to `http://localhost:3000`
+- **API Base URL**: `http://localhost:3000/api/v1`
 
-### 3. API Endpoints
+## API Endpoints
 
-#### **Authentication**
+### Authentication
 
-- **POST** `/api/v1/auth/register` - Register a new account
-  - Body: `{ "username": "admin", "password": "123" }`
-- **POST** `/api/v1/auth/login` - Login to get a token
-  - Body: `{ "username": "admin", "password": "123" }`
+#### Register a New User
+- **Endpoint**: `POST /api/v1/auth/register`
+- **Body**:
+  ```json
+  {
+    "username": "admin",
+    "password": "123456"
+  }
+  ```
 
-#### **Books**
+#### Login
+- **Endpoint**: `POST /api/v1/auth/login`
+- **Body**:
+  ```json
+  {
+    "username": "admin",
+    "password": "123456"
+  }
+  ```
+- **Response**: Returns a JWT token to be used in protected routes
 
-- **GET** `/api/v1/books` - List all books (Public)
-  - Query Params: `?page=1&limit=5&sort=-price&search=atsby&genre=Classic`
-- **GET** `/api/v1/books/:id` - Get details of a single book (Public)
-- **POST** `/api/v1/books` - Add a new book (**Protected**)
-  - Header: `Authorization: Bearer <token>`
-  - Body: `{ "title": "...", "author": "...", "genre": "...", "price": 10.5, "publishedYear": 2021 }`
-- **PATCH** `/api/v1/books/:id` - Update a book (**Protected**)
-- **DELETE** `/api/v1/books/:id` - Delete a book (**Protected**)
+### Books
 
-## 🛡️ Architecture Note
+#### List All Books (Public)
+- **Endpoint**: `GET /api/v1/books`
+- **Query Parameters**:
+  - `page` - Page number (default: 1)
+  - `limit` - Items per page (default: 10)
+  - `sort` - Sort field (prefix with `-` for descending, e.g., `-price`)
+  - `search` - Search by title or author
+  - `genre` - Filter by genre
+- **Example**: `GET /api/v1/books?page=1&limit=5&sort=-price&search=Gatsby&genre=Classic`
 
-This project strictly follows the **Controller → Service → Repository** flow:
+#### Get Single Book (Public)
+- **Endpoint**: `GET /api/v1/books/:id`
+- **Parameters**: `id` - Book ID
 
-1.  **Controller**: Receives the HTTP request, validates input, and calls the Service.
-2.  **Service**: Contains the business logic (e.g., "User already exists check").
-3.  **Repository**: Deals directly with the data storage (Arrays/Database).
+#### Create a Book (Protected)
+- **Endpoint**: `POST /api/v1/books`
+- **Headers**: 
+  ```
+  Authorization: Bearer <your-jwt-token>
+  ```
+- **Body**:
+  ```json
+  {
+    "title": "The Great Gatsby",
+    "author": "F. Scott Fitzgerald",
+    "genre": "Classic",
+    "price": 10.99,
+    "publishedYear": 1925
+  }
+  ```
+
+#### Update a Book (Protected)
+- **Endpoint**: `PATCH /api/v1/books/:id`
+- **Headers**: 
+  ```
+  Authorization: Bearer <your-jwt-token>
+  ```
+- **Body**: Include only the fields you want to update
+  ```json
+  {
+    "price": 12.99
+  }
+  ```
+
+#### Delete a Book (Protected)
+- **Endpoint**: `DELETE /api/v1/books/:id`
+- **Headers**: 
+  ```
+  Authorization: Bearer <your-jwt-token>
+  ```
+
+## Architecture Overview
+
+This project follows a layered architecture pattern with clear separation of concerns:
+
+### Request Flow
+
+```
+Request → Routes → Controller → Service → Repository → Data Storage
+```
+
+### Layer Responsibilities
+
+1. **Controller Layer** (`src/controllers/`)
+   - Handles HTTP requests and responses
+   - Validates input data
+   - Calls appropriate service methods
+   - Returns formatted responses
+
+2. **Service Layer** (`src/services/`)
+   - Contains business logic
+   - Performs data validation and processing
+   - Coordinates between controllers and repositories
+   - Handles complex operations
+
+3. **Repository Layer** (`src/repositories/`)
+   - Direct interaction with data storage
+   - Performs CRUD operations
+   - Abstracts data access logic
+   - Enables easy switching between storage solutions
+
+### Benefits of This Architecture
+
+- **Separation of Concerns**: Each layer has a specific responsibility
+- **Testability**: Each layer can be tested independently
+- **Maintainability**: Changes in one layer don't affect others
+- **Scalability**: Easy to add new features or modify existing ones
+- **Reusability**: Services and repositories can be reused across different controllers
+
+## Development Best Practices
+
+- **Error Handling**: Centralized error handling using custom `AppError` class
+- **Input Validation**: Comprehensive validation at the controller level
+- **JWT Authentication**: Secure token-based authentication for protected routes
+- **Consistent API Responses**: Standardized response format across all endpoints
+- **Code Documentation**: JSDoc comments for better code understanding
+
+## Technologies Used
+
+- **Node.js**: JavaScript runtime
+- **Express.js**: Web application framework
+- **JWT (jsonwebtoken)**: Authentication tokens
+- **bcryptjs**: Password hashing
+- **dotenv**: Environment variable management
+
+## Contributing
+
+Feel free to submit issues and enhancement requests!
